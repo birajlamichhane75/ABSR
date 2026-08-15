@@ -58,11 +58,11 @@ export default function StudentWorkspace() {
 
   return (
     <AppLayout>
-      <div className="flex h-[calc(100vh)] flex-col bg-slate-50 lg:flex-row">
+      <div className="flex min-h-[calc(100vh-3.5rem)] flex-col bg-[#F8FAFC] lg:min-h-screen lg:flex-row">
         <div
-          className={`flex flex-1 flex-col bg-slate-200 transition-all ${isTutoring ? "lg:max-w-[calc(100%-420px)]" : ""}`}
+          className={`flex flex-1 flex-col bg-white transition-all ${isTutoring ? "lg:max-w-[calc(100%-420px)]" : ""}`}
         >
-          <div className="border-b border-slate-200 bg-white px-6 py-4">
+          <div className="border-b border-slate-200 bg-white px-4 py-4 sm:px-6">
             <Link
               href="/student"
               className="mb-3 inline-flex items-center gap-2 text-sm text-slate-500 hover:text-indigo-700"
@@ -71,10 +71,10 @@ export default function StudentWorkspace() {
             </Link>
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div>
-                <p className="text-xs font-medium uppercase tracking-wider text-indigo-600">
+                <p className="text-xs font-medium uppercase tracking-wider text-[#4F46E5]">
                   {MOCK_ASSIGNMENT.topic}
                 </p>
-                <h1 className="text-xl font-bold text-slate-900">
+                <h1 className="text-lg font-bold text-[#0F172A] sm:text-xl">
                   Socratic Writing Canvas
                 </h1>
               </div>
@@ -92,7 +92,7 @@ export default function StudentWorkspace() {
             </div>
           </div>
 
-          <div className="flex-1 overflow-y-auto bg-gradient-to-b from-slate-200 via-slate-100 to-slate-200 px-6 py-8">
+          <div className="flex-1 overflow-y-auto bg-gradient-to-b from-slate-200 via-slate-100 to-slate-200 px-4 py-6 sm:px-6 sm:py-8">
             <div className="mx-auto max-w-3xl">
               <div className="mb-4 rounded-2xl border border-white/70 bg-white/80 px-5 py-4 shadow-sm backdrop-blur-sm">
                 <p className="text-xs font-semibold uppercase tracking-wider text-indigo-600">
@@ -121,7 +121,7 @@ export default function StudentWorkspace() {
                   whileTap={{ scale: canSubmit ? 0.98 : 1 }}
                   onClick={() => canSubmit && submitEssay()}
                   disabled={!canSubmit}
-                  className="flex items-center gap-2 rounded-xl bg-indigo-600 px-6 py-3 text-sm font-semibold text-white hover:bg-indigo-500 disabled:cursor-not-allowed disabled:opacity-40"
+                  className="btn-primary focus-ring flex items-center gap-2 rounded-xl px-5 py-3 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-40 sm:px-6"
                 >
                   <Send className="h-4 w-4" />
                   Submit Essay

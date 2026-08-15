@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" className={`${plusJakarta.variable} h-full`} style={{ colorScheme: "light" }}>
-      <body className="min-h-full bg-slate-50 text-slate-900 antialiased">
+      <body className="min-h-full bg-[#F8FAFC] text-[#0F172A] antialiased">
         {children}
       </body>
     </html>

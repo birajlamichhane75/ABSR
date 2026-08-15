@@ -29,6 +29,7 @@ const studentStatusLabels = {
 export default function TeacherDashboard() {
   const router = useRouter();
   const role = useStore((s) => s.role);
+  const userName = useStore((s) => s.userName);
   const teacherCourses = useStore((s) => s.teacherCourses);
   const subscriptionTier = useStore((s) => s.subscriptionTier);
   const selectedTeacherCourseId = useStore((s) => s.selectedTeacherCourseId);
@@ -74,7 +75,7 @@ export default function TeacherDashboard() {
 
   return (
     <AppLayout>
-      <div className="p-8">
+      <div className="p-4 sm:p-6 lg:p-8">
         {selectedCourse ? (
           <motion.div
             initial={{ opacity: 0 }}
@@ -131,11 +132,12 @@ export default function TeacherDashboard() {
           >
             <div className="mb-8 flex flex-wrap items-start justify-between gap-4">
               <div>
-                <h1 className="text-3xl font-bold text-slate-900">
+                <h1 className="text-2xl font-bold text-[#0F172A] sm:text-3xl">
                   Teacher Dashboard
                 </h1>
-                <p className="mt-2 text-slate-600">
+                <p className="mt-2 text-[#64748B]">
                   Manage courses and monitor student understanding
+                  {userName ? ` — ${userName}` : ""}
                 </p>
               </div>
 
@@ -150,7 +152,7 @@ export default function TeacherDashboard() {
                 <p className="text-xs text-slate-500">
                   {subscriptionTier === "pro"
                     ? "Unlimited courses"
-                    : "Limit: 2 courses"}
+                    : "Limit: 5 courses"}
                 </p>
                 {subscriptionTier === "free" && (
                   <button

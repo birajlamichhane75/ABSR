@@ -96,7 +96,7 @@ export function SocraticTutorPanel() {
           animate={{ x: 0, opacity: 1 }}
           exit={{ x: "100%", opacity: 0 }}
           transition={{ type: "spring", damping: 25, stiffness: 200 }}
-          className="flex w-full flex-col border-l border-slate-200 bg-white lg:w-[420px]"
+          className="flex w-full flex-col border-l border-slate-200 bg-white lg:fixed lg:right-0 lg:top-0 lg:z-20 lg:h-screen lg:w-[420px]"
         >
           <div className="border-b border-slate-200 bg-amber-50 p-5">
             <div className="flex items-center gap-3">

@@ -59,7 +59,7 @@ export interface MCQChoice {
 export interface ToastMessage {
   id: string;
   message: string;
-  type: "success" | "warning" | "info";
+  type: "success" | "warning" | "info" | "error";
 }
 
 export const MOCK_ASSIGNMENT = {
@@ -211,16 +211,9 @@ const INITIAL_STUDENT_COURSES: StudentCourse[] = [
     subtitle: "Classical mechanics & motion",
     inviteCode: "PHY101AB",
     assignments: [
-      {
-        id: "assign-circ-001",
-        title: "Circular Motion & Inertia",
-        status: "start",
-      },
-      {
-        id: "assign-friction-002",
-        title: "Friction & Normal Force",
-        status: "resume",
-      },
+      { id: "assign-circ-001", title: "Circular Motion & Inertia", status: "start" },
+      { id: "assign-friction-002", title: "Friction & Normal Force", status: "resume" },
+      { id: "assign-energy-003", title: "Work & Energy Problems", status: "graded" },
     ],
   },
   {
@@ -229,11 +222,46 @@ const INITIAL_STUDENT_COURSES: StudentCourse[] = [
     subtitle: "1947–1991 geopolitical tensions",
     inviteCode: "HIS202",
     assignments: [
-      {
-        id: "assign-cold-war-001",
-        title: "Cuban Missile Crisis Essay",
-        status: "graded",
-      },
+      { id: "assign-cold-war-001", title: "Cuban Missile Crisis Essay", status: "graded" },
+      { id: "assign-berlin-002", title: "Berlin Wall Analysis", status: "start" },
+    ],
+  },
+  {
+    id: "course-bio-110",
+    title: "Biology 110: Cell Systems",
+    subtitle: "Cells, membranes, and metabolism",
+    inviteCode: "BIO110X",
+    assignments: [
+      { id: "assign-cell-001", title: "Mitosis vs Meiosis", status: "start" },
+      { id: "assign-lab-002", title: "Lab Report: Enzyme Activity", status: "resume" },
+    ],
+  },
+  {
+    id: "course-calc-201",
+    title: "Calculus II: Integration",
+    subtitle: "Integrals, series, and applications",
+    inviteCode: "CALC201",
+    assignments: [
+      { id: "assign-integral-001", title: "U-Substitution Reflection", status: "start" },
+    ],
+  },
+  {
+    id: "course-eng-150",
+    title: "English 150: Rhetoric & Composition",
+    subtitle: "Argumentation and critical writing",
+    inviteCode: "ENG150A",
+    assignments: [
+      { id: "assign-rhetoric-001", title: "Persuasive Essay Draft", status: "resume" },
+      { id: "assign-peer-002", title: "Peer Review Synthesis", status: "graded" },
+    ],
+  },
+  {
+    id: "course-chem-120",
+    title: "Chemistry 120: Organic Basics",
+    subtitle: "Bonding, reactions, and nomenclature",
+    inviteCode: "CHEM120",
+    assignments: [
+      { id: "assign-org-001", title: "Functional Groups Quiz Write-up", status: "start" },
     ],
   },
 ];
@@ -260,6 +288,36 @@ const INITIAL_TEACHER_COURSES: TeacherCourse[] = [
       { id: "stu-jordan", name: "Jordan Lee", status: "unopened" },
     ],
   },
+  {
+    id: "course-bio-110",
+    title: "Biology 110: Cell Systems",
+    description: "Foundations of cell biology with Socratic lab write-ups.",
+    enrollmentCount: 31,
+    students: [
+      { id: "stu-riley", name: "Riley Brooks", status: "writing" },
+      { id: "stu-taylor", name: "Taylor Nguyen", status: "graded" },
+    ],
+  },
+  {
+    id: "course-calc-201",
+    title: "Calculus II: Integration",
+    description: "Advanced integration techniques and conceptual checkpoints.",
+    enrollmentCount: 22,
+    students: [
+      { id: "stu-casey", name: "Casey Ortiz", status: "unopened" },
+      { id: "stu-drew", name: "Drew Kim", status: "graded" },
+    ],
+  },
+  {
+    id: "course-eng-150",
+    title: "English 150: Rhetoric & Composition",
+    description: "Writing-intensive course with real-time reasoning checkpoints.",
+    enrollmentCount: 27,
+    students: [
+      { id: "stu-sage", name: "Sage Williams", status: "writing" },
+      { id: "stu-quinn", name: "Quinn Adams", status: "graded" },
+    ],
+  },
 ];
 
 interface ChatMessage {
@@ -269,9 +327,21 @@ interface ChatMessage {
   streaming?: boolean;
 }
 
+export const DEMO_EMAIL = "demo@nouslms.com";
+export const DEMO_PASSWORD = "demo1234";
+
 interface NousStore {
   role: Role;
   setRole: (role: Role) => void;
+
+  isAuthenticated: boolean;
+  userName: string;
+  userEmail: string;
+  authReady: boolean;
+  login: (email: string, password: string, role: Role) => boolean;
+  register: (name: string, role: Role, email: string, password: string) => boolean;
+  logout: () => void;
+  hydrateAuth: () => void;
 
   workspaceStatus: WorkspaceStatus;
   essayText: string;
@@ -340,9 +410,110 @@ interface NousStore {
 
 let toastCounter = 0;
 
+const SESSION_KEY = "nous-session";
+
+function saveSession(data: {
+  isAuthenticated: boolean;
+  userName: string;
+  userEmail: string;
+  role: Role;
+}) {
+  if (typeof window === "undefined") return;
+  sessionStorage.setItem(SESSION_KEY, JSON.stringify(data));
+}
+
+function clearSession() {
+  if (typeof window === "undefined") return;
+  sessionStorage.removeItem(SESSION_KEY);
+}
+
 export const useStore = create<NousStore>((set, get) => ({
   role: "student",
-  setRole: (role) => set({ role }),
+  setRole: (role) => {
+    set({ role });
+    const { isAuthenticated, userName, userEmail } = get();
+    if (isAuthenticated) {
+      saveSession({ isAuthenticated, userName, userEmail, role });
+    }
+  },
+
+  isAuthenticated: false,
+  userName: "",
+  userEmail: "",
+  authReady: false,
+
+  login: (email, password, role) => {
+    const normalized = email.trim().toLowerCase();
+    if (
+      normalized === DEMO_EMAIL.toLowerCase() &&
+      password === DEMO_PASSWORD
+    ) {
+      const userName = role === "teacher" ? "Demo Teacher" : "Demo Student";
+      set({
+        isAuthenticated: true,
+        userName,
+        userEmail: DEMO_EMAIL,
+        role,
+        authReady: true,
+      });
+      saveSession({
+        isAuthenticated: true,
+        userName,
+        userEmail: DEMO_EMAIL,
+        role,
+      });
+      return true;
+    }
+    return false;
+  },
+
+  register: (name, role, email, password) => {
+    if (!name.trim() || !email.trim() || password.length < 4) return false;
+    set({
+      isAuthenticated: true,
+      userName: name.trim(),
+      userEmail: email.trim(),
+      role,
+      authReady: true,
+    });
+    saveSession({
+      isAuthenticated: true,
+      userName: name.trim(),
+      userEmail: email.trim(),
+      role,
+    });
+    return true;
+  },
+
+  logout: () => {
+    clearSession();
+    set({
+      isAuthenticated: false,
+      userName: "",
+      userEmail: "",
+      authReady: true,
+    });
+  },
+
+  hydrateAuth: () => {
+    if (typeof window === "undefined") return;
+    try {
+      const raw = sessionStorage.getItem(SESSION_KEY);
+      if (!raw) {
+        set({ authReady: true });
+        return;
+      }
+      const data = JSON.parse(raw) as {
+        isAuthenticated: boolean;
+        userName: string;
+        userEmail: string;
+        role: Role;
+      };
+      set({ ...data, authReady: true });
+    } catch {
+      set({ authReady: true });
+    }
+  },
 
   workspaceStatus: "WRITING",
   essayText: "",
@@ -498,11 +669,7 @@ export const useStore = create<NousStore>((set, get) => ({
         subtitle: "1947–1991 geopolitical tensions",
         inviteCode: "HIS202",
         assignments: [
-          {
-            id: "assign-cold-war-new",
-            title: "Berlin Wall Analysis",
-            status: "start",
-          },
+          { id: "assign-cold-war-new", title: "Berlin Wall Analysis", status: "start" },
         ],
       },
       PHY101AB: {
@@ -510,18 +677,30 @@ export const useStore = create<NousStore>((set, get) => ({
         subtitle: "Classical mechanics & motion",
         inviteCode: "PHY101AB",
         assignments: [
-          {
-            id: "assign-new-phys",
-            title: "Newton's Laws Application",
-            status: "start",
-          },
+          { id: "assign-new-phys", title: "Newton's Laws Application", status: "start" },
+        ],
+      },
+      BIO110X: {
+        title: "Biology 110: Cell Systems",
+        subtitle: "Cells, membranes, and metabolism",
+        inviteCode: "BIO110X",
+        assignments: [
+          { id: "assign-bio-new", title: "Cell Division Essay", status: "start" },
+        ],
+      },
+      CALC201: {
+        title: "Calculus II: Integration",
+        subtitle: "Integrals, series, and applications",
+        inviteCode: "CALC201",
+        assignments: [
+          { id: "assign-calc-new", title: "Series Convergence Write-up", status: "start" },
         ],
       },
     };
 
     const courseData = catalog[normalized];
     if (!courseData) {
-      get().addToast("Invalid invite code. Try HIS202 or PHY101AB.", "warning");
+      get().addToast("Invalid invite code. Try BIO110X, CALC201, HIS202, or PHY101AB.", "warning");
       return false;
     }
 
@@ -551,7 +730,7 @@ export const useStore = create<NousStore>((set, get) => ({
       return false;
     }
 
-    if (subscriptionTier === "free" && teacherCourses.length >= 2) {
+    if (subscriptionTier === "free" && teacherCourses.length >= 5) {
       set({ showLimitModal: true });
       return false;
     }
