@@ -30,7 +30,7 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
         role="status"
         aria-live="polite"
       >
-        <p className="text-secondary text-sm">Loading Nous LMS…</p>
+        <p className="text-secondary text-sm">Loading VoxLMS…</p>
       </div>
     );
   }

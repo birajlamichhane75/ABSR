@@ -266,59 +266,124 @@ const INITIAL_STUDENT_COURSES: StudentCourse[] = [
   },
 ];
 
-const INITIAL_TEACHER_COURSES: TeacherCourse[] = [
+const TEACHER_COURSE: TeacherCourse = {
+  id: "course-phys-101",
+  title: "Physics 101: Mechanics",
+  description: "Introductory classical mechanics for first-year students.",
+  enrollmentCount: 24,
+  students: [
+    { id: "stu-alex", name: "Alex Rivera", status: "writing" },
+    { id: "stu-jamie", name: "Jamie Smith", status: "graded" },
+    { id: "stu-sam", name: "Sam Chen", status: "unopened" },
+  ],
+};
+
+export interface StudentCourseAnalytics {
+  courseId: string;
+  courseTitle: string;
+  progress: number;
+  effortScore: number;
+  hintsUsed: number;
+  checkpointsPassed: number;
+  checkpointsTotal: number;
+  strength: string;
+  struggle: string;
+  trend: number[];
+}
+
+export const STUDENT_COURSE_ANALYTICS: StudentCourseAnalytics[] = [
   {
-    id: "course-phys-101",
-    title: "Physics 101: Mechanics",
-    description: "Introductory classical mechanics for first-year students.",
-    enrollmentCount: 24,
-    students: [
-      { id: "stu-alex", name: "Alex Rivera", status: "writing" },
-      { id: "stu-jamie", name: "Jamie Smith", status: "graded" },
-      { id: "stu-sam", name: "Sam Chen", status: "unopened" },
-    ],
+    courseId: "course-phys-101",
+    courseTitle: "Physics 101: Mechanics",
+    progress: 78,
+    effortScore: 91,
+    hintsUsed: 2,
+    checkpointsPassed: 3,
+    checkpointsTotal: 4,
+    strength: "Strong reasoning on inertia after tutor session",
+    struggle: "Initial centrifugal force misconception",
+    trend: [62, 70, 55, 82, 91],
   },
   {
-    id: "course-hist-202",
-    title: "World History: The Cold War",
-    description: "Analysis of Cold War diplomacy and proxy conflicts.",
-    enrollmentCount: 18,
-    students: [
-      { id: "stu-maya", name: "Maya Patel", status: "graded" },
-      { id: "stu-jordan", name: "Jordan Lee", status: "unopened" },
-    ],
+    courseId: "course-hist-202",
+    courseTitle: "World History: The Cold War",
+    progress: 100,
+    effortScore: 88,
+    hintsUsed: 0,
+    checkpointsPassed: 2,
+    checkpointsTotal: 2,
+    strength: "Clear causal arguments and evidence use",
+    struggle: "None flagged recently",
+    trend: [80, 85, 88, 90, 88],
   },
   {
-    id: "course-bio-110",
-    title: "Biology 110: Cell Systems",
-    description: "Foundations of cell biology with Socratic lab write-ups.",
-    enrollmentCount: 31,
-    students: [
-      { id: "stu-riley", name: "Riley Brooks", status: "writing" },
-      { id: "stu-taylor", name: "Taylor Nguyen", status: "graded" },
-    ],
+    courseId: "course-bio-110",
+    courseTitle: "Biology 110: Cell Systems",
+    progress: 45,
+    effortScore: 76,
+    hintsUsed: 1,
+    checkpointsPassed: 1,
+    checkpointsTotal: 3,
+    strength: "Accurate vocabulary in lab reports",
+    struggle: "Connecting membrane transport to energy flow",
+    trend: [70, 68, 60, 72, 76],
   },
   {
-    id: "course-calc-201",
-    title: "Calculus II: Integration",
-    description: "Advanced integration techniques and conceptual checkpoints.",
-    enrollmentCount: 22,
-    students: [
-      { id: "stu-casey", name: "Casey Ortiz", status: "unopened" },
-      { id: "stu-drew", name: "Drew Kim", status: "graded" },
-    ],
+    courseId: "course-calc-201",
+    courseTitle: "Calculus II: Integration",
+    progress: 20,
+    effortScore: 82,
+    hintsUsed: 0,
+    checkpointsPassed: 0,
+    checkpointsTotal: 2,
+    strength: "Methodical step-by-step setup",
+    struggle: "Series convergence justification not started",
+    trend: [82, 82, 82, 82, 82],
   },
   {
-    id: "course-eng-150",
-    title: "English 150: Rhetoric & Composition",
-    description: "Writing-intensive course with real-time reasoning checkpoints.",
-    enrollmentCount: 27,
-    students: [
-      { id: "stu-sage", name: "Sage Williams", status: "writing" },
-      { id: "stu-quinn", name: "Quinn Adams", status: "graded" },
-    ],
+    courseId: "course-eng-150",
+    courseTitle: "English 150: Rhetoric",
+    progress: 65,
+    effortScore: 94,
+    hintsUsed: 3,
+    checkpointsPassed: 2,
+    checkpointsTotal: 3,
+    strength: "Excellent revision after Socratic feedback",
+    struggle: "Thesis clarity in early drafts",
+    trend: [75, 80, 78, 88, 94],
+  },
+  {
+    courseId: "course-chem-120",
+    courseTitle: "Chemistry 120: Organic Basics",
+    progress: 10,
+    effortScore: 70,
+    hintsUsed: 0,
+    checkpointsPassed: 0,
+    checkpointsTotal: 1,
+    strength: "Engaged with checkpoint prompts",
+    struggle: "Functional group nomenclature — just enrolled",
+    trend: [70, 70, 70, 70, 70],
   },
 ];
+
+export type ThemeMode = "light" | "dark";
+export type TextSize = "sm" | "md" | "lg";
+
+export interface UserSettings {
+  theme: ThemeMode;
+  textSize: TextSize;
+  notifyCheckpoints: boolean;
+  notifyTutor: boolean;
+  notifyGrades: boolean;
+}
+
+const DEFAULT_SETTINGS: UserSettings = {
+  theme: "light",
+  textSize: "md",
+  notifyCheckpoints: true,
+  notifyTutor: true,
+  notifyGrades: true,
+};
 
 interface ChatMessage {
   id: string;
@@ -327,10 +392,10 @@ interface ChatMessage {
   streaming?: boolean;
 }
 
-export const DEMO_EMAIL = "demo@nouslms.com";
+export const DEMO_EMAIL = "demo@voxlms.com";
 export const DEMO_PASSWORD = "demo1234";
 
-interface NousStore {
+interface VoxStore {
   role: Role;
   setRole: (role: Role) => void;
 
@@ -338,10 +403,15 @@ interface NousStore {
   userName: string;
   userEmail: string;
   authReady: boolean;
+  settings: UserSettings;
+  liveAnnouncement: string;
   login: (email: string, password: string, role: Role) => boolean;
   register: (name: string, role: Role, email: string, password: string) => boolean;
   logout: () => void;
   hydrateAuth: () => void;
+  setDisplayName: (name: string) => void;
+  updateSettings: (patch: Partial<UserSettings>) => void;
+  announce: (message: string) => void;
 
   workspaceStatus: WorkspaceStatus;
   essayText: string;
@@ -410,13 +480,14 @@ interface NousStore {
 
 let toastCounter = 0;
 
-const SESSION_KEY = "nous-session";
+const SESSION_KEY = "vox-session";
 
 function saveSession(data: {
   isAuthenticated: boolean;
   userName: string;
   userEmail: string;
   role: Role;
+  settings: UserSettings;
 }) {
   if (typeof window === "undefined") return;
   sessionStorage.setItem(SESSION_KEY, JSON.stringify(data));
@@ -427,13 +498,13 @@ function clearSession() {
   sessionStorage.removeItem(SESSION_KEY);
 }
 
-export const useStore = create<NousStore>((set, get) => ({
+export const useStore = create<VoxStore>((set, get) => ({
   role: "student",
   setRole: (role) => {
     set({ role });
-    const { isAuthenticated, userName, userEmail } = get();
+    const { isAuthenticated, userName, userEmail, settings } = get();
     if (isAuthenticated) {
-      saveSession({ isAuthenticated, userName, userEmail, role });
+      saveSession({ isAuthenticated, userName, userEmail, role, settings });
     }
   },
 
@@ -441,6 +512,51 @@ export const useStore = create<NousStore>((set, get) => ({
   userName: "",
   userEmail: "",
   authReady: false,
+  settings: DEFAULT_SETTINGS,
+  liveAnnouncement: "",
+
+  announce: (message) => {
+    set({ liveAnnouncement: "" });
+    if (typeof window !== "undefined") {
+      window.setTimeout(() => set({ liveAnnouncement: message }), 80);
+    } else {
+      set({ liveAnnouncement: message });
+    }
+  },
+
+  setDisplayName: (name) => {
+    const trimmed = name.trim();
+    if (!trimmed) return;
+    set({ userName: trimmed });
+    const { isAuthenticated, userEmail, role, settings } = get();
+    if (isAuthenticated) {
+      saveSession({
+        isAuthenticated: true,
+        userName: trimmed,
+        userEmail,
+        role,
+        settings,
+      });
+    }
+    get().announce(`Display name updated to ${trimmed}`);
+  },
+
+  updateSettings: (patch) => {
+    set((s) => {
+      const settings = { ...s.settings, ...patch };
+      if (s.isAuthenticated) {
+        saveSession({
+          isAuthenticated: true,
+          userName: s.userName,
+          userEmail: s.userEmail,
+          role: s.role,
+          settings,
+        });
+      }
+      return { settings };
+    });
+    get().announce("Settings updated");
+  },
 
   login: (email, password, role) => {
     const normalized = email.trim().toLowerCase();
@@ -461,7 +577,9 @@ export const useStore = create<NousStore>((set, get) => ({
         userName,
         userEmail: DEMO_EMAIL,
         role,
+        settings: get().settings,
       });
+      get().announce(`Signed in as ${userName}`);
       return true;
     }
     return false;
@@ -481,7 +599,9 @@ export const useStore = create<NousStore>((set, get) => ({
       userName: name.trim(),
       userEmail: email.trim(),
       role,
+      settings: get().settings,
     });
+    get().announce(`Account created for ${name.trim()}`);
     return true;
   },
 
@@ -492,7 +612,9 @@ export const useStore = create<NousStore>((set, get) => ({
       userName: "",
       userEmail: "",
       authReady: true,
+      settings: DEFAULT_SETTINGS,
     });
+    get().announce("Signed out");
   },
 
   hydrateAuth: () => {
@@ -508,8 +630,13 @@ export const useStore = create<NousStore>((set, get) => ({
         userName: string;
         userEmail: string;
         role: Role;
+        settings?: UserSettings;
       };
-      set({ ...data, authReady: true });
+      set({
+        ...data,
+        settings: data.settings ?? DEFAULT_SETTINGS,
+        authReady: true,
+      });
     } catch {
       set({ authReady: true });
     }
@@ -530,9 +657,9 @@ export const useStore = create<NousStore>((set, get) => ({
   selectedCourseId: null,
   inviteCodeInput: "",
 
-  teacherCourses: INITIAL_TEACHER_COURSES,
+  teacherCourses: [TEACHER_COURSE],
   subscriptionTier: "free",
-  selectedTeacherCourseId: null,
+  selectedTeacherCourseId: TEACHER_COURSE.id,
   selectedStudentId: null,
   newCourseTitle: "",
   newCourseDescription: "",
@@ -802,6 +929,7 @@ export const useStore = create<NousStore>((set, get) => ({
   addToast: (message, type = "info") => {
     const id = `toast-${++toastCounter}`;
     set((s) => ({ toasts: [...s.toasts, { id, message, type }] }));
+    get().announce(message);
     setTimeout(() => get().removeToast(id), 4000);
   },
 

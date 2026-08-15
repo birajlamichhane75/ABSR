@@ -9,9 +9,9 @@ const plusJakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Nous LMS — Socratic Learning Platform",
+  title: "VoxLMS — Grade reasoning, not just answers",
   description:
-    "Real-time writing monitoring, MCQ checkpoints, and Socratic AI tutoring for deeper understanding.",
+    "VoxLMS monitors step-by-step reasoning in real time, teaches through Socratic checkpoints, and never punishes learning.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

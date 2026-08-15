@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -13,6 +13,7 @@ import {
   User,
   Globe,
   Code2,
+  ArrowRight,
 } from "lucide-react";
 import {
   useStore,
@@ -29,6 +30,7 @@ export default function LoginPage() {
   const register = useStore((s) => s.register);
   const isAuthenticated = useStore((s) => s.isAuthenticated);
   const role = useStore((s) => s.role);
+  const loginPanelRef = useRef<HTMLElement>(null);
 
   const [mode, setMode] = useState<AuthMode>("login");
   const [authRole, setAuthRole] = useState<Role>("student");
@@ -71,14 +73,19 @@ export default function LoginPage() {
     setError("");
   };
 
+  const scrollToLogin = () => {
+    setAuthRole("student");
+    loginPanelRef.current?.scrollIntoView({ behavior: "smooth" });
+    loginPanelRef.current?.focus();
+  };
+
   return (
     <div className="flex min-h-screen flex-col lg:flex-row">
-      {/* Branding panel */}
       <section
-        className="relative flex min-h-[42vh] flex-1 flex-col justify-between overflow-hidden bg-[#070B14] px-6 py-10 text-white lg:min-h-screen lg:px-12 lg:py-14"
-        aria-label="Nous LMS product preview"
+        className="relative flex min-h-[50vh] flex-1 flex-col justify-between overflow-hidden bg-[#070B14] px-6 py-10 text-white lg:min-h-screen lg:px-12 lg:py-14"
+        aria-label="VoxLMS product preview"
       >
-        <div className="pointer-events-none absolute inset-0">
+        <div className="pointer-events-none absolute inset-0" aria-hidden="true">
           <div className="absolute -left-20 top-10 h-72 w-72 rounded-full bg-purple-600/30 blur-[100px]" />
           <div className="absolute bottom-0 right-0 h-80 w-80 rounded-full bg-blue-500/20 blur-[120px]" />
           <div className="absolute left-1/2 top-1/2 h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full bg-emerald-500/10 blur-[90px]" />
@@ -90,20 +97,30 @@ export default function LoginPage() {
               <Sparkles className="h-5 w-5" aria-hidden="true" />
             </div>
             <div>
-              <p className="text-lg font-bold tracking-tight">Nous LMS</p>
-              <p className="text-sm text-slate-400">Socratic AI learning platform</p>
+              <p className="text-lg font-bold tracking-tight">VoxLMS</p>
+              <p className="text-sm text-slate-400">Teach reasoning. Never punish learning.</p>
             </div>
           </div>
-          <h1 className="mt-10 max-w-lg text-3xl font-bold leading-tight lg:text-4xl">
-            Learn by thinking, not by copying answers.
+
+          <h1 className="mt-10 max-w-xl text-4xl font-extrabold leading-[1.1] tracking-tight lg:text-5xl">
+            We grade how you think — not just what you write.
           </h1>
-          <p className="mt-4 max-w-md text-sm leading-relaxed text-slate-400">
-            Real-time writing checkpoints, Socratic tutoring, and teacher analytics
-            that reveal how understanding develops over time.
+          <p className="mt-5 max-w-lg text-base leading-relaxed text-slate-300 lg:text-lg">
+            VoxLMS tracks step-by-step reasoning and effort in real time, pauses you with
+            Socratic checkpoints, and guides you forward — without punishment.
           </p>
+
+          <button
+            type="button"
+            onClick={scrollToLogin}
+            className="focus-ring mt-8 inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-violet-600 to-blue-600 px-6 py-3.5 text-sm font-bold text-white shadow-lg shadow-violet-500/30 transition-all hover:from-violet-500 hover:to-blue-500"
+          >
+            Try the AI Tutor
+            <ArrowRight className="h-4 w-4" aria-hidden="true" />
+          </button>
         </div>
 
-        <div className="relative z-10 mx-auto mt-10 w-full max-w-md lg:mt-0">
+        <div className="relative z-10 mx-auto mt-10 w-full max-w-md lg:mt-0" aria-hidden="true">
           <motion.div
             animate={{ y: [0, -6, 0] }}
             transition={{ repeat: Infinity, duration: 6, ease: "easeInOut" }}
@@ -113,11 +130,12 @@ export default function LoginPage() {
               Live workspace
             </p>
             <p className="mt-2 text-sm text-slate-200">
-              Explain circular motion using frame of reference…
+              Step 3: Passenger inertia keeps them moving straight while the car turns…
             </p>
             <div className="mt-4 h-2 rounded-full bg-white/10">
-              <div className="h-2 w-2/3 rounded-full bg-gradient-to-r from-violet-500 to-blue-500" />
+              <div className="h-2 w-3/4 rounded-full bg-gradient-to-r from-violet-500 to-blue-500" />
             </div>
+            <p className="mt-2 text-xs text-emerald-300">Effort score: 91% · Reasoning tracked</p>
           </motion.div>
 
           <motion.div
@@ -126,10 +144,9 @@ export default function LoginPage() {
             className="absolute -right-2 top-8 w-44 rounded-xl border border-emerald-400/20 bg-emerald-500/10 p-3 backdrop-blur-md lg:-right-16"
           >
             <div className="flex items-center gap-2 text-emerald-300">
-              <CheckCircle2 className="h-4 w-4" aria-hidden="true" />
+              <CheckCircle2 className="h-4 w-4" />
               <span className="text-xs font-semibold">Checkpoint passed</span>
             </div>
-            <p className="mt-1 text-[11px] text-emerald-100/80">Inertia concept clarified</p>
           </motion.div>
 
           <motion.div
@@ -138,10 +155,9 @@ export default function LoginPage() {
             className="absolute -left-2 bottom-0 w-48 rounded-xl border border-blue-400/20 bg-blue-500/10 p-3 backdrop-blur-md lg:-left-14"
           >
             <div className="flex items-center gap-2 text-blue-300">
-              <Brain className="h-4 w-4" aria-hidden="true" />
-              <span className="text-xs font-semibold">Socratic tutor</span>
+              <Brain className="h-4 w-4" />
+              <span className="text-xs font-semibold">Socratic tutor active</span>
             </div>
-            <p className="mt-1 text-[11px] text-blue-100/80">Guiding with analogy, not answers</p>
           </motion.div>
 
           <motion.div
@@ -150,33 +166,37 @@ export default function LoginPage() {
             className="absolute bottom-[-3rem] right-8 w-40 rounded-xl border border-violet-400/20 bg-violet-500/10 p-3 backdrop-blur-md"
           >
             <div className="flex items-center gap-2 text-violet-300">
-              <TrendingUp className="h-4 w-4" aria-hidden="true" />
+              <TrendingUp className="h-4 w-4" />
               <span className="text-xs font-semibold">Understanding +18%</span>
             </div>
           </motion.div>
         </div>
       </section>
 
-      {/* Login panel */}
-      <section className="flex flex-1 items-center justify-center bg-[#F4F6FA] px-4 py-10 lg:px-8">
+      <section
+        ref={loginPanelRef}
+        tabIndex={-1}
+        className="flex flex-1 items-center justify-center bg-[#F4F6FA] px-4 py-10 lg:px-8"
+        aria-label="Sign in to VoxLMS"
+      >
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          className="w-full max-w-md rounded-3xl border border-slate-200/80 bg-white p-8 shadow-xl shadow-slate-200/60 transition-shadow hover:shadow-2xl"
+          className="w-full max-w-md rounded-3xl border border-slate-200/80 bg-white p-8 shadow-xl shadow-slate-200/60"
         >
           <h2 className="text-2xl font-bold text-slate-900">
-            {mode === "login" ? "Welcome back" : "Create your account"}
+            {mode === "login" ? "Welcome to VoxLMS" : "Create your account"}
           </h2>
           <p className="mt-1 text-sm text-slate-500">
             {mode === "login"
-              ? "Sign in to continue your Socratic learning session."
+              ? "Sign in to continue — student or teacher."
               : "Register for the demo — no backend required."}
           </p>
 
           <div
             className="mt-6 flex rounded-xl bg-slate-100 p-1"
             role="tablist"
-            aria-label="Select role"
+            aria-label="Select role at sign in"
           >
             {(["student", "teacher"] as Role[]).map((r) => (
               <button
@@ -196,11 +216,13 @@ export default function LoginPage() {
             ))}
           </div>
 
-          <div className="mt-4 flex gap-2 border-b border-slate-200">
+          <div className="mt-4 flex gap-2 border-b border-slate-200" role="tablist" aria-label="Login or register">
             {(["login", "register"] as AuthMode[]).map((m) => (
               <button
                 key={m}
                 type="button"
+                role="tab"
+                aria-selected={mode === m}
                 onClick={() => {
                   setMode(m);
                   setError("");
@@ -216,7 +238,7 @@ export default function LoginPage() {
             ))}
           </div>
 
-          <form onSubmit={handleSubmit} className="mt-6 space-y-4" noValidate>
+          <form onSubmit={handleSubmit} className="mt-6 space-y-4" noValidate aria-label="Authentication form">
             <AnimatePresence mode="wait">
               {mode === "register" && (
                 <motion.div
@@ -236,7 +258,7 @@ export default function LoginPage() {
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       autoComplete="name"
-                      className="focus-ring w-full rounded-xl border border-slate-200 py-3 pl-10 pr-4 text-sm text-slate-900 transition-shadow focus:border-violet-500 focus:shadow-[0_0_0_3px_rgba(139,92,246,0.15)]"
+                      className="focus-ring w-full rounded-xl border border-slate-200 py-3 pl-10 pr-4 text-sm text-slate-900"
                       placeholder="Alex Rivera"
                     />
                   </div>
@@ -257,7 +279,7 @@ export default function LoginPage() {
                   onChange={(e) => setEmail(e.target.value)}
                   autoComplete="email"
                   required
-                  className="focus-ring w-full rounded-xl border border-slate-200 py-3 pl-10 pr-4 text-sm text-slate-900 transition-shadow focus:border-violet-500 focus:shadow-[0_0_0_3px_rgba(139,92,246,0.15)]"
+                  className="focus-ring w-full rounded-xl border border-slate-200 py-3 pl-10 pr-4 text-sm text-slate-900"
                   placeholder="you@school.edu"
                 />
               </div>
@@ -276,14 +298,14 @@ export default function LoginPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   autoComplete={mode === "login" ? "current-password" : "new-password"}
                   required
-                  className="focus-ring w-full rounded-xl border border-slate-200 py-3 pl-10 pr-4 text-sm text-slate-900 transition-shadow focus:border-violet-500 focus:shadow-[0_0_0_3px_rgba(139,92,246,0.15)]"
+                  className="focus-ring w-full rounded-xl border border-slate-200 py-3 pl-10 pr-4 text-sm text-slate-900"
                   placeholder="••••••••"
                 />
               </div>
             </div>
 
             {error && (
-              <p className="text-error text-sm" role="alert">
+              <p className="text-error text-sm" role="alert" aria-live="assertive">
                 {error}
               </p>
             )}
@@ -309,9 +331,9 @@ export default function LoginPage() {
 
             <button
               type="submit"
-              className="focus-ring w-full rounded-xl bg-gradient-to-r from-violet-600 to-blue-600 py-3.5 text-sm font-semibold text-white shadow-lg shadow-violet-500/25 transition-all hover:from-violet-500 hover:to-blue-500 hover:shadow-xl"
+              className="focus-ring w-full rounded-xl bg-gradient-to-r from-violet-600 to-blue-600 py-3.5 text-sm font-semibold text-white shadow-lg shadow-violet-500/25 transition-all hover:from-violet-500 hover:to-blue-500"
             >
-              {mode === "login" ? "Sign in" : "Create account"}
+              {mode === "login" ? "Sign in to VoxLMS" : "Create account"}
             </button>
           </form>
 
@@ -321,7 +343,7 @@ export default function LoginPage() {
               <button
                 type="button"
                 disabled
-                aria-label="Continue with Google (demo only, not functional)"
+                aria-label="Continue with Google, demo only, not functional"
                 className="focus-ring flex flex-1 items-center justify-center gap-2 rounded-xl border border-slate-200 py-2.5 text-sm text-slate-500"
               >
                 <Globe className="h-4 w-4" aria-hidden="true" /> Google
@@ -329,7 +351,7 @@ export default function LoginPage() {
               <button
                 type="button"
                 disabled
-                aria-label="Continue with GitHub (demo only, not functional)"
+                aria-label="Continue with GitHub, demo only, not functional"
                 className="focus-ring flex flex-1 items-center justify-center gap-2 rounded-xl border border-slate-200 py-2.5 text-sm text-slate-500"
               >
                 <Code2 className="h-4 w-4" aria-hidden="true" /> GitHub

@@ -203,6 +203,54 @@ body {
   cursor: not-allowed;
 }
 
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+html.dark {
+  --color-bg: #0f172a;
+  --color-surface: #1e293b;
+  --color-text: #f1f5f9;
+  --color-text-secondary: #94a3b8;
+  --background: var(--color-bg);
+  --foreground: var(--color-text);
+}
+
+html.dark body {
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+html[data-text-size="sm"] {
+  font-size: 14px;
+}
+
+html[data-text-size="md"] {
+  font-size: 16px;
+}
+
+html[data-text-size="lg"] {
+  font-size: 18px;
+}
+
+html.dark .surface-card,
+html.dark .bg-grid {
+  background-color: var(--color-surface);
+  border-color: #334155;
+}
+
+html.dark .surface-card {
+  background: var(--color-surface);
+}
+
 .notebook-lines:focus-visible {
   outline: 2px solid var(--color-primary);
   outline-offset: -2px;
